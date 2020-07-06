@@ -1,35 +1,42 @@
+export const autoGroupColumnDef =  {
+  minWidth: 250
+}
+
 export const defaultColDef = {
-  editable: true,
-  sortable: true,
   flex: 1,
-  minWidth: 100,
-  filter: true,
+  minWidth: 150,
+  sortable: true,
   resizable: true,
 };
 
 export const columnDefs = [
   {
-    field: 'athlete',
-    width: 150,
-    chartDataType: 'category',
+    field: 'country',
+    rowGroup: true,
+    enableRowGroup: true,
   },
-  {
-    field: 'age',
-    chartDataType: 'category',
-    sort: 'asc',
-  },
-  {field: 'sport'},
   {
     field: 'year',
-    chartDataType: 'excluded',
+    pivot: true,
+    enablePivot: true,
   },
+  { field: 'date' },
+  { field: 'sport' },
   {
     field: 'gold',
-    chartDataType: 'series',
+    // Remember to mark value columns with enableValue=true when using the Tool Panel.
+    // Otherwise you won't be able to drag and drop them to the 'Values' section in the Tool Panel.
+    enableValue: true,
+    aggFunc: 'sum',
   },
   {
     field: 'silver',
-    chartDataType: 'series',
+    enableValue: true,
+    aggFunc: 'sum',
   },
-  {field: 'bronze'},
+  {
+    field: 'bronze',
+    enableValue: true,
+    aggFunc: 'sum',
+  },
 ]

@@ -1,7 +1,7 @@
-TypeScript React "Ag Grid" Chart Demo
+TypeScript React "Ag Grid" Pivot Table Demo
 ===================================
 
-Show chart of the table. Enterprise feature.
+Pivot mode: group columns, aggregate values. Enterprise feature.
 
 ```
 npm install
