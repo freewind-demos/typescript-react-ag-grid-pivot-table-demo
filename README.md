@@ -1,7 +1,7 @@
-TypeScript React "Ag Grid" Table Demo
+TypeScript React "Ag Grid" Chart Demo
 ===================================
 
-How to add/remove rows.
+Show chart of the table. Enterprise feature.
 
 ```
 npm install

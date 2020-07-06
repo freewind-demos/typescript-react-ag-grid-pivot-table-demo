@@ -1,94 +1,104 @@
-import React, {useState} from 'react';
-import {AgGridReact} from 'ag-grid-react';
-import {GridApi, ColDef, ICellRendererParams} from 'ag-grid-community';
-
+import {
+  ChartType,
+  FirstDataRenderedEvent,
+  ProcessChartOptionsParams,
+  CreateRangeChartParams,
+  ChartOptions,
+  LegendPosition
+} from "ag-grid-community";
 import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import 'ag-grid-enterprise';
+import {ColumnApi} from "ag-grid-community/dist/lib/columnController/columnApi";
+import {GridReadyEvent} from "ag-grid-community/dist/lib/events";
+import {AgGridReact} from 'ag-grid-react';
+import React, {useState} from 'react';
+import {columnDefs, defaultColDef} from "./columnDefs";
+import data from "./data";
 
-function DeleteRowButton(props: ICellRendererParams) {
-  const {api, node} = props;
-
-  function deleteRow() {
-    api.updateRowData({remove: [node.data]})
+function processChartOptions(params: ProcessChartOptionsParams): ChartOptions<any> {
+  const opts: any = params.options;
+  opts.title.enabled = true;
+  opts.title.text = 'Medals by Age';
+  opts.legend.position = LegendPosition.Bottom;
+  opts.seriesDefaults.tooltip.renderer = function (params: any) {
+    const titleStyle = params.color
+      ? ' style="color: white; background-color:' + params.color + '"'
+      : '';
+    const title = params.title
+      ? '<div class="ag-chart-tooltip-title"' +
+      titleStyle +
+      '>' +
+      params.title +
+      '</div>'
+      : '';
+    const value = params.datum[params.yKey]
+      .toString()
+      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    return (
+      title +
+      '<div class="ag-chart-tooltip-content" style="text-align: center">' +
+      value +
+      '</div>'
+    );
+  };
+  if (opts.xAxis) {
+    opts.xAxis.label.rotation = 0;
   }
-
-  return <button onClick={deleteRow}>X</button>
+  if (opts.yAxis) {
+    opts.yAxis.label.rotation = 0;
+  }
+  return opts;
 }
 
-const columnDefs: ColDef[] = [{
-  headerName: "Make", field: "make", sortable: true, filter: true, editable: true, width: 100
-}, {
-  headerName: "Model", field: "model", sortable: true, filter: true, editable: true, width: 100
-}, {
-  headerName: "Price", field: "price", sortable: true, filter: true, editable: true, width: 100
-}, {
-  headerName: "Operation", field: "operation", cellRendererFramework: DeleteRowButton
-}]
+export default function GridExample() {
 
-type Data = {
-  make: string,
-  model: string,
-  price: number
-};
+  const [columnApi, setColumnApi] = useState<ColumnApi>();
 
-const rowData: Data[] = [{
-    make: "Toyota", model: "Celica", price: 35000
-  }, {
-    make: "Ford", model: "Mondeo", price: 32000
-  }, {
-    make: "Porsche", model: "Boxter", price: 72000
-  }]
-;
-
-function newData(): Data {
-  return {
-    make: "NewMake", model: "NewModel", price: 999
-  }
-}
-
-export default function Hello() {
-  const [gridApi, setGridApi] = useState<GridApi>(null as any)
-
-  function addNewRow() {
-    gridApi.updateRowData({add: [newData()]});
+  function onGridReady(event: GridReadyEvent): void {
+    setColumnApi(event.columnApi);
   }
 
-  function addNewRowAndEdit() {
-    const result = gridApi.updateRowData({add: [newData()]});
-    const addedNode = result.add[0]
-    gridApi.setFocusedCell(addedNode.rowIndex, 'make');
-    gridApi.startEditingCell({
-      rowIndex: addedNode.rowIndex,
-      colKey: 'make',
-    });
+  function onFirstDataRendered(params: FirstDataRenderedEvent): void {
+    const createRangeChartParams: CreateRangeChartParams = {
+      cellRange: {
+        rowStartIndex: 0,
+        rowEndIndex: 79,
+        columns: ['age', 'gold', 'silver', 'bronze'],
+      },
+      chartType: ChartType.GroupedColumn,
+      chartContainer: document.querySelector<HTMLElement>('#myChart')!,
+      aggFunc: 'sum',
+    };
+    params.api.createRangeChart(createRangeChartParams);
   }
 
-  function clearAll() {
-    gridApi.setRowData([]);
-  }
-
-  function removeSelected() {
-    const selectedRows = gridApi.getSelectedRows();
-    gridApi.updateRowData({remove: selectedRows});
-  }
-
-  return <div>
-    <h1>Hello React-AgGrid</h1>
-    <div className="ag-theme-balham">
-      <div>
-        <button onClick={addNewRow}>Add</button>
-        <button onClick={addNewRowAndEdit}>Add & Edit</button>
-        <button onClick={clearAll}>Clear All</button>
-        <button onClick={removeSelected}>Remove Selected</button>
+  return (
+    <div style={{width: '100%', height: '100%'}}>
+      <div className="wrapper">
+        <div
+          id="myGrid"
+          style={{
+            height: '100%',
+            width: '100%',
+          }}
+          className="ag-theme-alpine"
+        >
+          <AgGridReact
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            popupParent={document.body}
+            enableRangeSelection={true}
+            enableCharts={true}
+            processChartOptions={processChartOptions}
+            onGridReady={onGridReady}
+            onFirstDataRendered={onFirstDataRendered}
+            rowData={data}
+          />
+        </div>
+        <div id="myChart" className="ag-theme-alpine my-chart"></div>
       </div>
-      <AgGridReact
-        columnDefs={columnDefs}
-        rowSelection='multiple'
-        rowData={rowData}
-        singleClickEdit={true}
-        onGridReady={params => setGridApi(params.api)}
-        stopEditingWhenGridLosesFocus={true}>
-      </AgGridReact>
     </div>
-  </div>
+  );
+
 };
