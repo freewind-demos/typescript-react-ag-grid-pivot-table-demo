@@ -9,3 +9,5 @@ npm run demo
 ```
 
 It will open page on browser automatically.
+
+![demo](./images/demo.jpg)

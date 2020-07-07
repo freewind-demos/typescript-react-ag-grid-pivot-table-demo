@@ -1,10 +1,10 @@
-import Hello from './hello'
+import PivotTable from './PivotTable'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
 import './index.pcss';
 
 ReactDOM.render(
-  <Hello/>,
+  <PivotTable/>,
   document.body
 )
