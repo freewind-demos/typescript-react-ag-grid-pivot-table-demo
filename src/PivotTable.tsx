@@ -25,6 +25,8 @@ export default function PivotTable() {
           pivotMode={true}
           showToolPanel={true}
           rowData={data}
+          enableRangeSelection={true}
+          enableCharts={true}
         />
       </div>
     </div>
