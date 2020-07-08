@@ -1,5 +1,5 @@
 import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import 'ag-grid-enterprise';
 import {AgGridReact} from 'ag-grid-react';
 import React from 'react';
@@ -16,7 +16,7 @@ export default function PivotTable() {
           height: '100%',
           width: '100%',
         }}
-        className="ag-theme-alpine"
+        className="ag-theme-balham"
       >
         <AgGridReact
           columnDefs={buildColumnDefs(data)}
